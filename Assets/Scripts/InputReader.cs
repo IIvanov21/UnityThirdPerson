@@ -8,13 +8,17 @@ public class InputReader : MonoBehaviour, Controls.IPlayerActions
 {
 
     public Vector2 MovementValue { get; private set; }
+    public bool IsAttacking { get; private set; }
 
     public event Action JumpEvent;
     public event Action DodgeEvent;
     public event Action TargetEvent;
     public event Action CancelTargetEvent;
 
+
     private Controls controls;
+
+
 
     private void Start()
     {
@@ -60,5 +64,17 @@ public class InputReader : MonoBehaviour, Controls.IPlayerActions
     {
         if (!context.performed) { return; };
         CancelTargetEvent?.Invoke();
+    }
+
+    public void OnAttack(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            IsAttacking = true;
+        }
+        else if (context.canceled)
+        {
+            IsAttacking = false;
+        }
     }
 }
