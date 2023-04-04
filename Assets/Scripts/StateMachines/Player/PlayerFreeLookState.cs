@@ -13,7 +13,6 @@ public class PlayerFreeLookState : PlayerBaseState
 
     public override void Enter()
     {
-        Debug.Log("Enter");
         stateMachine.Animator.CrossFadeInFixedTime(FreeLookBlendTree,AnimatorDampTime);
         stateMachine.InputReader.TargetEvent += OnTarget;
     }
@@ -38,7 +37,6 @@ public class PlayerFreeLookState : PlayerBaseState
 
     public override void Exit()
     {
-        Debug.Log("Exit");
         stateMachine.InputReader.TargetEvent -= OnTarget;
 
     }
