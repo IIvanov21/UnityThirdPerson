@@ -21,10 +21,25 @@ public abstract class EnemyBaseState : State
         stateMachine.Controller.Move((Vector3.zero + stateMachine.ForceReceiver.Movement) * deltaTime);
     }
 
-    protected bool IsInChangeRange()
+    protected bool IsInChaseRange()
     {
+        if (stateMachine.Player.IsDead) return false;
+
         float magnitude = (stateMachine.Player.transform.position - stateMachine.transform.position).sqrMagnitude;
 
         return magnitude <= stateMachine.PlayerChasingRange*stateMachine.PlayerChasingRange;
+    }
+
+   
+
+    protected void FacePlayer()
+    {
+        if (stateMachine.Player == null) return;
+
+        Vector3 facingVector = stateMachine.Player.transform.position - stateMachine.transform.position;
+
+        facingVector.y = 0.0f;
+
+        stateMachine.transform.rotation = Quaternion.LookRotation(facingVector);
     }
 }

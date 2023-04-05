@@ -25,8 +25,9 @@ public class EnemyIdleState : EnemyBaseState
     public override void Tick(float deltaTime)
     {
         Move(deltaTime);
+        FacePlayer();
 
-        if (IsInChangeRange())
+        if (IsInChaseRange())
         {
             stateMachine.SwitchState(new EnemyChasingState(stateMachine));  
             return;

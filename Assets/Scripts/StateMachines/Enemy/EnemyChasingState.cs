@@ -21,9 +21,15 @@ public class EnemyChasingState : EnemyBaseState
     public override void Tick(float deltaTime)
     {
         MoveToPlayer(deltaTime);
-        if(!IsInChangeRange())
+        FacePlayer();
+        if(!IsInChaseRange())
         {
             stateMachine.SwitchState(new EnemyIdleState(stateMachine));
+            return;
+        }
+        else if(IsInAttackRange()) 
+        {
+            stateMachine.SwitchState(new EnemyAttackingState(stateMachine));
             return;
         }
 
@@ -39,11 +45,22 @@ public class EnemyChasingState : EnemyBaseState
 
     private void MoveToPlayer(float deltaTime)
     {
-        stateMachine.Agent.destination = stateMachine.Player.transform.position;
+        if (stateMachine.Agent.isOnNavMesh)
+        {
+            stateMachine.Agent.destination = stateMachine.Player.transform.position;
 
-        Move(stateMachine.Agent.desiredVelocity.normalized * stateMachine.MovementSpeed, deltaTime);
+            Move(stateMachine.Agent.desiredVelocity.normalized * stateMachine.MovementSpeed, deltaTime);
+        }
 
         stateMachine.Agent.velocity = stateMachine.Controller.velocity;
     }
 
+    private bool IsInAttackRange()
+    {
+        if(stateMachine.Player.IsDead) return false;    
+        float distance = (stateMachine.Player.transform.position - stateMachine.transform.position).sqrMagnitude;
+        return distance <= stateMachine.AttackRange*stateMachine.AttackRange;
+    }
+
+    
 }
