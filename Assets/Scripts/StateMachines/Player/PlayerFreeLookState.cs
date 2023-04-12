@@ -6,15 +6,24 @@ public class PlayerFreeLookState : PlayerBaseState
 {
     private readonly int FreeLookSpeedHash = Animator.StringToHash("FreeLookSpeed");
     private readonly int FreeLookBlendTree = Animator.StringToHash("FreeLookBlendTree");
-
-    public PlayerFreeLookState(PlayerStateMachine stateMachine) : base(stateMachine){    }
+    private bool shouldFade;
+    public PlayerFreeLookState(PlayerStateMachine stateMachine,bool shouldFade=true) : base(stateMachine)
+    {
+        this.shouldFade = shouldFade;
+    }
 
     private const float AnimatorDampTime = 0.1f;
 
     public override void Enter()
     {
-        stateMachine.Animator.CrossFadeInFixedTime(FreeLookBlendTree,AnimatorDampTime);
         stateMachine.InputReader.TargetEvent += OnTarget;
+        stateMachine.InputReader.JumpEvent += OnJump;
+        if(shouldFade)stateMachine.Animator.CrossFadeInFixedTime(FreeLookBlendTree,AnimatorDampTime);
+        else
+        {
+            stateMachine.Animator.Play(FreeLookBlendTree);
+            stateMachine.Animator.SetFloat(FreeLookSpeedHash, 0.0f);
+        }
     }
 
     
@@ -27,6 +36,7 @@ public class PlayerFreeLookState : PlayerBaseState
             return;
         }
 
+
         stateMachine.MovementVector = CalculateMovement();
         
 
@@ -38,6 +48,7 @@ public class PlayerFreeLookState : PlayerBaseState
     public override void Exit()
     {
         stateMachine.InputReader.TargetEvent -= OnTarget;
+        stateMachine.InputReader.JumpEvent -= OnJump;
 
     }
 
@@ -76,5 +87,8 @@ public class PlayerFreeLookState : PlayerBaseState
         stateMachine.SwitchState(new PlayerTargetingState(stateMachine));
     }
 
-    
+    private void OnJump()
+    {
+        stateMachine.SwitchState(new PlayerJumpingState(stateMachine));
+    }
 }
